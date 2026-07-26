@@ -1,0 +1,362 @@
+---
+pagetitle: "MAPEmunicipios — dados dos 5.570 municípios brasileiros"
+toc: false
+code-copy: hover
+---
+
+::: {.hero}
+::: {.olho}
+MAPE · IESP-UERJ
+:::
+
+# Os 5.570 municípios brasileiros, em um pacote R {.unnumbered}
+
+::: {.linha-fina}
+Trinta e cinco anos de dados sobre saúde, segurança, finanças, educação, meio
+ambiente e política municipal — organizados em 17 eixos temáticos, com cada
+variável documentada. Um comando baixa o eixo que você precisa; nenhum exige
+conta em nuvem nem cadastro.
+:::
+
+```r
+# install.packages("remotes")
+remotes::install_github("mape-iesp/MAPEmunicipios")
+
+library(MAPEmunicipios)
+mape_ler("saude")
+```
+:::
+
+::: {.numeros}
+::: {.numero}
+::: {.v}
+5.570
+:::
+::: {.r}
+municípios
+:::
+:::
+::: {.numero}
+::: {.v}
+1989–2024
+:::
+::: {.r}
+anos cobertos
+:::
+:::
+::: {.numero}
+::: {.v}
+17
+:::
+::: {.r}
+eixos temáticos
+:::
+:::
+::: {.numero}
+::: {.v}
+431
+:::
+::: {.r}
+variáveis documentadas
+:::
+:::
+::: {.numero}
+::: {.v}
+26
+:::
+::: {.r}
+tabelas publicadas
+:::
+:::
+:::
+
+## Para quem isto serve
+
+::: {.cartoes}
+::: {.cartao}
+::: {.quem .pesquisa}
+Pesquisa
+:::
+### Um painel pronto para regredir
+
+A chave é sempre `id_municipio` × `ano`, e as tabelas se juntam entre si sem
+tratamento. `mape_juntar()` confere a cardinalidade antes e **recusa** junções
+que multiplicariam linhas — inclusive as duas tabelas que herdaram chave
+duplicada da fonte.
+:::
+
+::: {.cartao}
+::: {.quem .jornal}
+Jornalismo
+:::
+### O ranking do seu município em três linhas
+
+`mape_ranking()` responde "quais cidades têm a maior taxa de homicídios?" com
+piso populacional, porque sem ele o ranking vira uma lista de municípios de três
+mil habitantes com um caso cada.
+:::
+
+::: {.cartao}
+::: {.quem .civil}
+Sociedade civil
+:::
+### Números com a ressalva junto
+
+Cada variável carrega o que se sabe sobre ela. A cobertura vacinal do SI-PNI
+passa de 100% em vários municípios — e `mape_sobre()` diz isso antes de você
+publicar o número.
+:::
+:::
+
+## O que dá para ver
+
+Os gráficos abaixo rodam no seu navegador, com dados agregados do próprio
+MAPEmunicipios. São uma amostra do que o pacote entrega inteiro.
+
+```{ojs}
+//| echo: false
+capitais = FileAttachment("dados/capitais.json").json()
+porUF = FileAttachment("dados/por_uf.json").json()
+cobertura = FileAttachment("dados/cobertura.json").json()
+eixos = FileAttachment("dados/eixos.json").json()
+ranking = FileAttachment("dados/ranking_homicidios_2019.json").json()
+```
+
+### Uma série, 27 capitais
+
+Escolha o indicador. Cada linha é uma capital; passe o mouse para ver qual.
+
+```{ojs}
+//| echo: false
+viewof indicador = Inputs.select(
+  new Map([
+    ["Taxa de homicídios (por 100 mil hab.)", "homicidios"],
+    ["PIB per capita (R$ de 2023)", "pib_pc"],
+    ["População residente", "populacao"],
+    ["Cobertura da Estratégia Saúde da Família (%)", "cobertura_esf"],
+    ["Gasto municipal em saúde por habitante (R$ de 2023)", "gasto_saude"]
+  ]),
+  {label: "Indicador", value: "homicidios"}
+)
+```
+
+```{ojs}
+//| echo: false
+serie = capitais.filter(d => d[indicador] != null && !isNaN(d[indicador]))
+
+Plot.plot({
+  width: 900,
+  height: 420,
+  marginLeft: 62,
+  marginBottom: 38,
+  style: {fontFamily: "Inter, system-ui, sans-serif", fontSize: "12px"},
+  x: {label: "ano", tickFormat: "d", grid: false},
+  y: {label: null, grid: true, nice: true, zero: indicador !== "populacao"},
+  color: {
+    legend: true,
+    domain: ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"],
+    range: ["#5d8a4e", "#a86a24", "#b2ac46", "#c0504d", "#3f7ea8"],
+    label: "região"
+  },
+  marks: [
+    Plot.ruleY([0], {stroke: "#e2e2dc"}),
+    Plot.line(serie, {
+      x: "ano", y: indicador, z: "id", stroke: "regiao",
+      strokeWidth: 1.4, strokeOpacity: 0.65, curve: "monotone-x"
+    }),
+    Plot.dot(serie, Plot.pointer({
+      x: "ano", y: indicador, z: "id", stroke: "regiao", r: 4, strokeWidth: 2
+    })),
+    Plot.tip(serie, Plot.pointer({
+      x: "ano", y: indicador, z: "id",
+      title: d => `${d.municipio}/${d.uf}\n${d.ano}\n${
+        d[indicador] == null ? "sem dado"
+        : d[indicador].toLocaleString("pt-BR", {maximumFractionDigits: 1})}`
+    }))
+  ]
+})
+```
+
+### Onde o dado existe
+
+Cada faixa é um eixo temático, e a cor mostra quantos dos 5.570 municípios têm
+valor naquele ano. Branco significa que a fonte não cobre aquele período — e
+saber disso antes de baixar poupa tempo.
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: 900,
+  height: 420,
+  marginLeft: 178,
+  marginBottom: 38,
+  style: {fontFamily: "Inter, system-ui, sans-serif", fontSize: "12px"},
+  x: {
+    label: "ano",
+    tickFormat: d => String(d),
+    // Um tick por ano empilharia 36 rótulos de quatro dígitos num eixo de 700
+    // pixels, e eles se sobrepõem. De cinco em cinco dá para ler.
+    ticks: d3.range(1990, 2025, 5)
+  },
+  y: {label: null},
+  color: {
+    type: "linear",
+    scheme: "YlGn",
+    domain: [0, 100],
+    legend: true,
+    label: "% dos municípios com dado"
+  },
+  marks: [
+    Plot.cell(cobertura, {
+      x: "ano", y: "tabela", fill: "cobertura_pct", inset: 0.4,
+      title: d => `${d.tabela}\n${d.ano}\n${d.municipios.toLocaleString("pt-BR")} municípios (${d.cobertura_pct}%)`
+    })
+  ]
+})
+```
+
+### O mesmo indicador, 27 estados
+
+A mediana municipal por estado — mediana, e não média, porque com municípios de
+800 a 12 milhões de habitantes a média descreve a capital, não o estado.
+
+```{ojs}
+//| echo: false
+// O rótulo é texto: passar o ano como número faz o Inputs.select formatá-lo
+// com separador de milhar e mostrar "2.019".
+viewof anoUFtxt = Inputs.select(["2021", "2019", "2015", "2010"],
+  {label: "Ano", value: "2019"})
+anoUF = +anoUFtxt
+viewof indUF = Inputs.select(
+  new Map([
+    ["Taxa de homicídios (mediana municipal)", "homicidios_mediana"],
+    ["PIB per capita (mediana municipal)", "pib_pc_mediana"],
+    ["Cobertura da ESF (mediana municipal)", "cobertura_esf_mediana"]
+  ]),
+  {label: "Indicador", value: "homicidios_mediana"}
+)
+```
+
+```{ojs}
+//| echo: false
+dadosUF = porUF.filter(d => d.ano === anoUF && d[indUF] != null)
+              .sort((a, b) => b[indUF] - a[indUF])
+
+Plot.plot({
+  width: 900,
+  height: 520,
+  marginLeft: 46,
+  marginRight: 64,
+  style: {fontFamily: "Inter, system-ui, sans-serif", fontSize: "12px"},
+  x: {label: null, grid: true, nice: true},
+  y: {label: null, domain: dadosUF.map(d => d.uf)},
+  color: {
+    legend: true,
+    domain: ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"],
+    range: ["#5d8a4e", "#a86a24", "#b2ac46", "#c0504d", "#3f7ea8"],
+    label: "região"
+  },
+  marks: [
+    Plot.barX(dadosUF, {
+      x: indUF, y: "uf", fill: "regiao", sort: {y: "-x"},
+      title: d => `${d.uf} — ${d.municipios} municípios\n${d[indUF].toLocaleString("pt-BR")}`
+    }),
+    Plot.text(dadosUF, {
+      x: indUF, y: "uf", text: d => d[indUF].toLocaleString("pt-BR", {maximumFractionDigits: 1}),
+      dx: 18, fontSize: 10.5, fill: "#101010", fillOpacity: 0.66
+    }),
+    Plot.ruleX([0])
+  ]
+})
+```
+
+## Três linhas que valem a pena copiar
+
+::: {.panel-tabset}
+
+### Ranking
+
+```r
+mape_ranking("taxa_homicidios", ano = 2019, populacao_minima = 100000)
+```
+
+```{ojs}
+//| echo: false
+Inputs.table(ranking.map(d => ({
+  Município: d.nome_municipio,
+  UF: d.sigla_uf,
+  "Taxa por 100 mil": d.taxa_homicidios.toLocaleString("pt-BR", {maximumFractionDigits: 1}),
+  População: d.populacao_residente_i.toLocaleString("pt-BR")
+})), {
+  rows: 10,
+  layout: "fixed",
+  width: {Município: 240, UF: 70, "Taxa por 100 mil": 150, População: 130}
+})
+```
+
+### Procurar variável
+
+```r
+mape_variaveis("cobertura vacinal")
+```
+
+Devolve todas as variáveis cujo nome ou descrição contêm as duas palavras, com a
+unidade de cada uma.
+
+### Juntar eixos
+
+```r
+d <- mape_juntar("seguranca", "populacao", "economia", territorio = TRUE)
+```
+
+Junta três eixos pela chave município × ano. Se algum tivesse chave duplicada, a
+função pararia e diria qual.
+
+### Ver a ressalva
+
+```r
+mape_sobre("pni_cobertura_bcg_pct")
+```
+
+Mostra descrição, unidade, faixa observada e o defeito conhecido: a fonte não
+trunca a cobertura em 100%, e o máximo registrado é 13.050%.
+
+:::
+
+## Como os dados estão organizados
+
+::: {.diagrama}
+![Esquema de separação dos dados do MAPEmunicipios em eixos e tabelas](img/esquema-dados.svg){fig-alt="Diagrama com três camadas — fonte, dimensão e derivado — e os 17 eixos temáticos do MAPEmunicipios"}
+
+O mesmo dado aparece em duas camadas. A **fonte** guarda o que foi observado; a
+**dimensão** guarda o painel município × ano. [Entenda a diferença](dados.qmd).
+:::
+
+## Comece
+
+::: {.cartoes}
+::: {.cartao}
+### [Comece aqui →](comecar.qmd)
+Instalação e as cinco funções que resolvem quase tudo.
+:::
+::: {.cartao}
+### [Os dados →](dados.qmd)
+O esquema, o catálogo completo e a busca por variável.
+:::
+::: {.cartao}
+### [Exemplos →](exemplos.qmd)
+Casos completos, do download ao gráfico.
+:::
+:::
+
+---
+
+::: {.callout-note appearance="simple"}
+## Como citar
+
+> Schaefer, B.; Meireles, F.; Freitas, C.; Borges, T. P.; Caldas, O.; Barreto,
+> L.; Gomes Filho, F.; Mendes, L. **MAPEmunicipios**: painel de dados dos
+> municípios brasileiros. MAPE/IESP-UERJ.
+
+No R: `citation("MAPEmunicipios")`.
+:::

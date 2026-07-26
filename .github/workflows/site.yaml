@@ -1,0 +1,51 @@
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'R/**'
+      - 'data/**'
+      - '.github/workflows/site.yaml'
+  workflow_dispatch:
+
+name: site
+
+# O site é estático e o conteúdo dinâmico vem de JSON pré-gerado, então o build
+# não precisa de rede nem de credencial. Os arquivos em site/dados/ são
+# versionados de propósito: regerá-los exigiria o repositório do ETL, que não
+# está disponível aqui.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: 1.6.39
+
+      - name: Renderizar
+        run: quarto render site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/_site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

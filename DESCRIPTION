@@ -1,6 +1,6 @@
 Package: MAPEmunicipios
-Title: Functions to Download and Use the MAPEmunicipios Dataset
-Version: 0.0.1
+Title: Acesso aos Dados do MAPEmunicipios
+Version: 0.1.0
 Authors@R: c(
     person("Bruno", "Schaefer", , "bruno.schaefer@iesp.uerj.br", role = c("aut"),
            comment = c(ORCID = "0000-0002-5127-7240")),
@@ -16,16 +16,36 @@ Authors@R: c(
     person("Frederico", "Gomes Filho", , "fredericofilho@iesp.uerj.br", role = c("aut"),
            comment = c(ORCID = "0009-0004-2217-8077")),
     person("Larissa", "Mendes", , "larissamendes@iesp.uerj.br", role = c("aut"),
-           comment = c(ORCID = "0009-0004-2217-8077"))
+           comment = c(ORCID = "0009-0004-2217-8077")),
+    person("MAPE/IESP-UERJ", role = c("cph", "fnd"))
  )
-Description: Provides a set of functions to download and use the MAPEmunicipios dataset.
-    The dataset contains detailed information of Brazilian municipalities, covering 
-    more than 451 variables across 31 original sources.
+Description: Acesso modular aos dados do MAPEmunicipios, um painel dos 5.570
+    municípios brasileiros de 1989 a 2024, organizado em 17 eixos temáticos e
+    431 variáveis. Baixa uma tabela por vez a partir de um release público do
+    GitHub, procura variáveis pelo nome ou pela descrição, junta tabelas
+    conferindo a cardinalidade antes, e calcula indicadores derivados com o
+    denominador visível. Não exige credencial de nuvem.
 License: MIT + file LICENSE
+URL: https://github.com/mape-iesp/MAPEmunicipios,
+    https://mape-iesp.github.io/MAPEmunicipios/
+BugReports: https://github.com/mape-iesp/MAPEmunicipios/issues
 Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 4.1)
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
-Imports: 
+Imports:
+    arrow,
     cli,
+    stats,
     tibble,
+    tools,
     utils
+Suggests:
+    ggplot2,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+Config/roxygen2/version: 8.0.0

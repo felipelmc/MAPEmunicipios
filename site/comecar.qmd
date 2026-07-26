@@ -1,0 +1,195 @@
+---
+title: "Comece aqui"
+subtitle: "Do zero ao primeiro gráfico, em cinco minutos"
+code-copy: hover
+---
+
+## Instalar
+
+```r
+# install.packages("remotes")
+remotes::install_github("mape-iesp/MAPEmunicipios")
+library(MAPEmunicipios)
+```
+
+Só isso. **Nenhuma credencial, nenhum cadastro, nenhuma conta em nuvem.** Os
+dados vêm de um release público do GitHub; a primeira leitura de cada tabela
+baixa o arquivo e guarda em cache, e as chamadas seguintes não tocam a rede.
+
+::: {.callout-tip appearance="simple"}
+Para escolher onde o cache fica, defina `MAPE_CACHE` no seu `.Renviron`. Sem
+isso, o pacote usa o diretório padrão do sistema — veja com `mape_cache_dir()`.
+:::
+
+## As cinco funções que resolvem quase tudo
+
+::: {.passos}
+1. **Descubra o que existe.**
+
+   ```r
+   mape_eixos()          # os 17 eixos temáticos
+   mape_tabelas()        # as 26 tabelas
+   ```
+
+   `mape_eixos()` devolve uma linha por eixo, com quantas tabelas e quantas
+   variáveis cada um tem. É por onde começar quando você ainda não sabe se o
+   dado que procura está aqui.
+
+2. **Ache a variável.**
+
+   ```r
+   mape_variaveis("homicidio")
+   mape_variaveis("cobertura vacinal", eixo = "saude")
+   ```
+
+   A busca varre nome e descrição das 431 variáveis, ignora acento e exige
+   **todas** as palavras — `"cobertura vacinal"` não devolve tudo que tem
+   "cobertura".
+
+3. **Leia antes de usar.**
+
+   ```r
+   mape_sobre("pni_cobertura_bcg_pct")
+   ```
+
+   Mostra a descrição, a unidade, a faixa realmente observada no dado e as
+   ressalvas conhecidas. Esta é a função que mais evita constrangimento: é aqui
+   que você descobre que a cobertura vacinal do SI-PNI chega a 13.050% porque a
+   fonte não trunca em 100%.
+
+4. **Baixe.**
+
+   ```r
+   saude <- mape_ler("saude")
+   rj    <- mape_ler("economia", uf = "RJ", anos = 2015:2021, territorio = TRUE)
+   ```
+
+   Os filtros `anos`, `uf` e `municipios` são aplicados depois do download — não
+   economizam banda, mas poupam memória e deixam o objeto do tamanho da sua
+   pergunta.
+
+   `territorio = TRUE` acrescenta nome do município, UF e região. É o que quase
+   todo mundo quer, e nenhuma tabela carrega: o bloco territorial pertence ao
+   diretório de municípios e só ele o publica.
+
+5. **Combine.**
+
+   ```r
+   d <- mape_juntar("seguranca", "populacao", territorio = TRUE)
+   ```
+
+   Junta pelo par `id_municipio` + `ano`, conferindo antes se a junção faz
+   sentido — e recusando as que não fazem.
+:::
+
+## Municípios: do nome ao código
+
+Toda tabela usa `id_municipio`, o código de sete dígitos do IBGE. Para ir do
+nome ao código:
+
+```r
+mape_buscar_municipio("Rio de Janeiro")
+#> # A tibble: 1 × 5
+#>   id_municipio nome_municipio sigla_uf nome_uf        nome_regiao
+#>   <chr>        <chr>          <chr>    <chr>          <chr>
+#> 1 3304557      Rio de Janeiro RJ       Rio de Janeiro Sudeste
+```
+
+Acento é opcional: `"sao paulo"` e `"São Paulo"` chegam ao mesmo lugar.
+
+Nomes repetidos existem, e são mais comuns do que parece — há cinco municípios
+chamados "Bom Jesus". Nesse caso a função **para** e lista os candidatos, em vez
+de escolher um:
+
+```r
+mape_resolver_municipio("Bom Jesus")
+#> Erro: "Bom Jesus" é o nome de 5 municípios.
+#> ℹ Passe `uf` para escolher, ou use o código direto.
+#> • Bom Jesus/PI (2201903), Bom Jesus/RN (2401701), Bom Jesus/PB (2502201),
+#>   Bom Jesus/SC (4202537), Bom Jesus/RS (4302303)
+
+mape_resolver_municipio("Bom Jesus", uf = "PI")
+#> [1] "2201903"
+```
+
+::: {.callout-important appearance="simple"}
+## `id_municipio` é texto, e precisa continuar sendo
+
+Lido como número, o código perde o zero à esquerda de todo município do Acre, de
+Alagoas e do Amazonas — e as junções silenciosamente deixam de casar. Se você
+exportar para CSV e reimportar, force `colClasses = "character"`.
+
+Além disso, código não é quantidade: nada deveria somar ou tirar média de um
+identificador municipal.
+:::
+
+## Indicadores prontos
+
+Alguns números que interessam não estão numa coluna: são uma conta entre
+colunas. O pacote traz um catálogo delas.
+
+```r
+mape_indicadores()
+```
+
+Para calcular:
+
+```r
+mape_calcular("taxa_homicidios", anos = 2019, uf = "RJ", territorio = TRUE)
+```
+
+E para o ranking, que é a pergunta mais frequente de quem escreve reportagem:
+
+```r
+mape_ranking("taxa_homicidios", ano = 2019, populacao_minima = 100000)
+```
+
+::: {.callout-warning appearance="simple"}
+## Por que `populacao_minima` existe
+
+Numa taxa por 100 mil habitantes, **um único caso** em município de três mil
+pessoas produz 33 por 100 mil. Sem piso populacional, todo ranking de taxa vira
+uma lista de municípios minúsculos com um evento cada — e a manchete que sai
+dali está errada.
+
+O piso não é conveniência: é o que faz a comparação significar alguma coisa.
+:::
+
+## O que fazer quando algo não funciona
+
+**"Não consegui baixar a tabela".** O pacote lê de um release do GitHub. Se a
+mensagem aparecer, confira a conexão e veja se o release existe em
+[github.com/mape-iesp/MAPEmunicipios-ETL/releases](https://github.com/mape-iesp/MAPEmunicipios-ETL/releases).
+
+**"Não encontrei a tabela X".** Rode `mape_tabelas()` para ver as 26 disponíveis.
+O nome aceita várias grafias — `"saude"`, `"saúde"`, `"10_saude"` — mas não
+adivinha.
+
+**"Não dá para juntar assim".** Alguma tabela tem chave duplicada, ou não tem
+coluna `ano`. A mensagem diz qual e por quê. Duas tabelas do MAPEmunicipios
+têm chave duplicada herdada da fonte, e isso está
+[documentado](dados.qmd#o-que-voce-precisa-saber-antes-de-publicar-um-numero).
+
+**"Faltam colunas para calcular".** Um indicador depende de colunas que não
+estão no objeto que você passou. A mensagem nomeia quais. Se o nome mudou entre
+versões, a tabela de depreciação do ETL registra o de-para.
+
+**O dado parece velho.** O cache não expira sozinho. Rode `mape_limpar_cache()`
+e leia de novo.
+
+## E depois
+
+::: {.cartoes}
+::: {.cartao}
+### [Os dados →](dados.qmd)
+Como as tabelas estão organizadas, o catálogo completo e a busca por variável.
+:::
+::: {.cartao}
+### [Exemplos →](exemplos.qmd)
+Análises completas, do download ao gráfico, com o código todo à mostra.
+:::
+::: {.cartao}
+### [Referência →](referencia.qmd)
+Todas as funções, com argumentos e valor de retorno.
+:::
+:::

@@ -1,0 +1,113 @@
+/*-- scss:defaults --*/
+
+// Paleta do MAPE, herdada de mape-iesp.github.io.
+$mape-oliva:  #b2ac46;
+$mape-verde:  #84954b;
+$mape-ambar:  #a86a24;
+$mape-tinta:  #101010;
+$mape-fundo:  #fbfbf8;
+$mape-linha:  #e2e2dc;
+$mape-suave:  #f5f6ee;
+
+$primary:   $mape-verde;
+$secondary: $mape-oliva;
+$body-bg:   #ffffff;
+$body-color: $mape-tinta;
+$link-color: $mape-verde;
+
+$font-family-sans-serif: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Helvetica, Arial, sans-serif;
+$font-family-monospace: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+
+$headings-font-weight: 700;
+$body-font-size: 1rem;
+$line-height-base: 1.65;
+
+$border-radius: 8px;
+$code-bg: $mape-suave;
+$code-color: #6a4a12;
+
+/*-- scss:rules --*/
+
+:root {
+  --mape-oliva: #{$mape-oliva};
+  --mape-verde: #{$mape-verde};
+  --mape-ambar: #{$mape-ambar};
+  --mape-linha: #{$mape-linha};
+  --mape-suave: #{$mape-suave};
+  --mape-fundo: #{$mape-fundo};
+  --mape-tinta: #{$mape-tinta};
+  --mape-mudo: rgba(16, 16, 16, 0.62);
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { letter-spacing: -0.015em; }
+h1 { font-size: 2.1rem; }
+h2 {
+  font-size: 1.5rem;
+  margin-top: 2.6rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--mape-linha);
+}
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+
+.navbar {
+  border-bottom: 1px solid var(--mape-linha);
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: saturate(180%) blur(10px);
+}
+.navbar-brand { font-weight: 700; letter-spacing: -0.02em; }
+.navbar .nav-link { font-weight: 500; font-size: 0.94rem; }
+.navbar .nav-link:hover { color: var(--mape-verde) !important; }
+
+// Barra de gradiente no topo, como no diagrama.
+.navbar::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, #{$mape-verde} 0%, #{$mape-oliva} 55%,
+                              #{$mape-ambar} 100%);
+}
+
+code {
+  font-size: 0.875em;
+  padding: 0.14em 0.36em;
+  border-radius: 4px;
+}
+pre {
+  border: 1px solid var(--mape-linha);
+  border-radius: 8px;
+  background: var(--mape-suave) !important;
+}
+div.sourceCode { background: var(--mape-suave); }
+
+table {
+  font-size: 0.9rem;
+}
+.table > :not(caption) > * > * { padding: 0.5rem 0.6rem; }
+thead th {
+  border-bottom: 2px solid var(--mape-linha) !important;
+  font-weight: 650;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--mape-mudo);
+}
+
+blockquote {
+  border-left: 3px solid var(--mape-oliva);
+  background: var(--mape-suave);
+  padding: 0.9rem 1.1rem;
+  margin: 1.4rem 0;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.95rem;
+}
+blockquote p:last-child { margin-bottom: 0; }
+
+.callout { border-radius: 8px; }
+
+#quarto-content > * { padding-top: 0; }
+
+.sidebar nav[role="doc-toc"] > ul li a { font-size: 0.86rem; }

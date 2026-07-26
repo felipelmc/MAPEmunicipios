@@ -1,8 +1,18 @@
 bibentry(
-  bibtype  = "misc",
-  title    = "MAPEmunicipios Dataset",
-  author   = "Bruno Schaefer, Fernando Meireles, Carlos Freitas, Tomás P Borges, Olga Caldas, Luisa B Fernandes, Frederico A A de Gomes Filho, and Larissa S Mendes",
-  publisher  = "OSF",
-  year     = 2024,
-  url      = "osf.io/3yka9"
+  bibtype   = "Misc",
+  title     = "MAPEmunicipios: painel de dados dos municipios brasileiros",
+  author    = c(
+    person("Bruno", "Schaefer"),
+    person("Fernando", "Meireles"),
+    person("Carlos", "Freitas"),
+    person("Tomas", "Paixao Borges"),
+    person("Olga", "Caldas"),
+    person("Luisa", "Barreto"),
+    person("Frederico", "Gomes Filho"),
+    person("Larissa", "Mendes")
+  ),
+  publisher = "MAPE/IESP-UERJ",
+  year      = 2026,
+  url       = "https://github.com/mape-iesp/MAPEmunicipios",
+  note      = "Pacote R, versao 0.1.0"
 )

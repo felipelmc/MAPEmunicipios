@@ -4,15 +4,75 @@
 \name{MAPEmunicipios-package}
 \alias{MAPEmunicipios}
 \alias{MAPEmunicipios-package}
-\title{MAPEmunicipios: Functions to Download and Use the MAPEmunicipios Dataset}
+\title{MAPEmunicipios: Acesso aos Dados do MAPEmunicipios}
 \description{
-Provides a set of functions to download and use the MAPEmunicipios dataset. The dataset contains detailed information of Brazilian municipalities, covering more than 451 variables across 31 original sources.
+Acesso modular aos dados do MAPEmunicipios, um painel dos 5.570 municípios brasileiros de 1989 a 2024, organizado em 17 eixos temáticos e 431 variáveis. Baixa uma tabela por vez a partir de um release público do GitHub, procura variáveis pelo nome ou pela descrição, junta tabelas conferindo a cardinalidade antes, e calcula indicadores derivados com o denominador visível. Não exige credencial de nuvem.
+}
+\section{Por onde começar}{
+
+
+O pacote responde a três perguntas, nesta ordem:
+
+\strong{O que existe?} \code{\link[=mape_eixos]{mape_eixos()}} lista os 17 eixos temáticos,
+\code{\link[=mape_tabelas]{mape_tabelas()}} lista as 26 tabelas, \code{\link[=mape_variaveis]{mape_variaveis()}} procura entre as 431
+variáveis pelo nome ou pela descrição.
+
+\strong{Como pego?} \code{\link[=mape_ler]{mape_ler()}} baixa uma tabela e guarda em cache.
+\code{\link[=mape_juntar]{mape_juntar()}} combina tabelas conferindo antes se a junção faz sentido.
+
+\strong{O que dá para calcular?} \code{\link[=mape_indicadores]{mape_indicadores()}} lista os indicadores
+derivados, \code{\link[=mape_calcular]{mape_calcular()}} os calcula e \code{\link[=mape_ranking]{mape_ranking()}} monta o ranking de
+municípios por qualquer um deles.
+}
+
+\section{A chave}{
+
+
+Toda tabela tem \code{id_municipio} (texto de sete dígitos) e, quando é painel,
+\code{ano} (inteiro). O código do IBGE é \strong{texto} de propósito: lê-lo como número
+perde o zero à esquerda de todo município do Acre, de Alagoas e do Amazonas.
+}
+
+\section{Dimensão e fonte}{
+
+
+Cada tabela é de uma das duas camadas, e a diferença importa.
+
+A \strong{dimensão} é o painel município × ano. É o que a maioria das pessoas quer:
+uma linha por município por ano, pronta para juntar com outra dimensão.
+
+A \strong{fonte} guarda o dado como foi observado, na granularidade nativa dele. O
+AdaptaBrasil publica um retrato de 2015, então \verb{03_meio_ambiente/adaptabrasil}
+tem 5.570 linhas, uma por município. A dimensão que o contém tem 183.810,
+porque repete a mesma medição em onze anos para preencher o painel.
+
+Ler a fonte responde "quantos municípios foram medidos?". Ler a dimensão
+responde "como isso se comporta ao longo do tempo, ao lado de outra coisa?".
+}
+
+\section{Não é preciso credencial}{
+
+
+Nada aqui exige conta no Google Cloud. Os dados vêm de um release público do
+GitHub. A credencial só é necessária para quem vai \emph{atualizar} uma fonte no
+repositório do ETL.
+}
+
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/mape-iesp/MAPEmunicipios}
+  \item \url{https://mape-iesp.github.io/MAPEmunicipios/}
+  \item Report bugs at \url{https://github.com/mape-iesp/MAPEmunicipios/issues}
+}
+
 }
 \author{
 \strong{Maintainer}: Fernando Meireles \email{fernando.meireles@iesp.uerj.br} (\href{https://orcid.org/0000-0002-7027-2058}{ORCID})
 
 Authors:
 \itemize{
+  \item Fernando Meireles \email{fernando.meireles@iesp.uerj.br} (\href{https://orcid.org/0000-0002-7027-2058}{ORCID})
   \item Bruno Schaefer \email{bruno.schaefer@iesp.uerj.br} (\href{https://orcid.org/0000-0002-5127-7240}{ORCID})
   \item Carlos Freitas \email{carlosfreitas@iesp.uerj.br} (\href{https://orcid.org/0000-0002-2493-8154}{ORCID})
   \item Tomás Paixão Borges \email{tomasborges@iesp.uerj.br} (\href{https://orcid.org/0000-0002-5276-6636}{ORCID})
@@ -20,6 +80,11 @@ Authors:
   \item Luisa Barreto \email{luisafernandes@iesp.uerj.br} (\href{https://orcid.org/0009-0001-2488-5806}{ORCID})
   \item Frederico Gomes Filho \email{fredericofilho@iesp.uerj.br} (\href{https://orcid.org/0009-0004-2217-8077}{ORCID})
   \item Larissa Mendes \email{larissamendes@iesp.uerj.br} (\href{https://orcid.org/0009-0004-2217-8077}{ORCID})
+}
+
+Other contributors:
+\itemize{
+  \item MAPE/IESP-UERJ [copyright holder, funder]
 }
 
 }

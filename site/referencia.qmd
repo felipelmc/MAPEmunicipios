@@ -1,0 +1,262 @@
+---
+title: "Referência"
+subtitle: "Todas as funções do pacote"
+code-copy: hover
+---
+
+No R, `?nome_da_funcao` traz a documentação completa de qualquer uma delas.
+
+## Descobrir
+
+### `mape_eixos()`
+
+Os 17 eixos temáticos, com quantas tabelas e quantas variáveis cada um tem.
+
+```r
+mape_eixos()
+```
+
+Sem argumentos. Devolve `eixo`, `rotulo`, `tabelas`, `variaveis`, `linhas` e
+`anos`.
+
+### `mape_tabelas(eixo, camada, busca)`
+
+As 26 tabelas publicadas, com as contagens medidas no arquivo.
+
+```r
+mape_tabelas()
+mape_tabelas(camada = "fonte")
+mape_tabelas(eixo = "saude")
+mape_tabelas(busca = "emendas")
+```
+
+| argumento | o que faz |
+|---|---|
+| `eixo` | filtra por eixo temático |
+| `camada` | `"dimensao"` (painel município × ano) ou `"fonte"` (o observado) |
+| `busca` | texto a procurar no nome e na descrição |
+
+### `mape_variaveis(busca, tabela, eixo, detalhes)`
+
+Procura entre as 431 variáveis. A busca ignora acento e exige **todas** as
+palavras — `"cobertura vacinal"` é mais restrito que `"cobertura"`.
+
+```r
+mape_variaveis("homicidio")
+mape_variaveis("receita", eixo = "06_financas")
+mape_variaveis("pib", detalhes = TRUE)
+```
+
+Com `detalhes = TRUE`, traz também domínio declarado, faixa observada, percentual
+de vazios e as ressalvas conhecidas.
+
+Pedir uma **dimensão** em `tabela` traz também as variáveis das fontes dela,
+porque a dimensão é a união das fontes.
+
+### `mape_sobre(nome)`
+
+Tudo o que se sabe sobre uma variável, formatado para leitura.
+
+```r
+mape_sobre("pib_per_capita_brl2023")
+mape_sobre("pni_cobertura_bcg_pct")
+```
+
+Mostra descrição, tabela, unidade, tipo, faixa realmente observada, percentual de
+vazios e — quando existe — a ressalva. Se o nome estiver errado, sugere os
+parecidos.
+
+## Ler
+
+### `mape_ler(tabela, territorio, anos, municipios, uf, versao, quieto)`
+
+Baixa uma tabela e devolve um `tibble`. A primeira chamada baixa; as seguintes
+usam o cache.
+
+```r
+mape_ler("saude")
+mape_ler("educacao/ideb")
+mape_ler("economia", uf = "RJ", anos = 2015:2021, territorio = TRUE)
+mape_ler("seguranca", municipios = c("São Paulo", "3304557"))
+```
+
+| argumento | o que faz |
+|---|---|
+| `tabela` | nome ou slug. `"saude"`, `"saúde"` e `"10_saude"` funcionam |
+| `territorio` | acrescenta nome do município, UF, nome da UF e região |
+| `anos` | vetor de anos |
+| `municipios` | vetor de códigos **ou nomes** |
+| `uf` | sigla ou vetor de siglas |
+| `versao` | tag do release; `"latest"` por padrão |
+| `quieto` | silencia as mensagens |
+
+Os filtros são aplicados depois do download. Eles poupam memória, não banda.
+
+### `mape_com_territorio(x, colunas)`
+
+Acrescenta o bloco territorial a qualquer tabela que tenha `id_municipio`.
+
+```r
+mape_com_territorio(meus_dados)
+mape_com_territorio(meus_dados, colunas = c("nome_municipio", "sigla_uf"))
+```
+
+O diretório tem uma linha por município, então esta junção nunca multiplica
+linhas.
+
+### `mape_resolver(tabela)`
+
+Converte um nome livre no slug exato. Útil para conferir o que o pacote entendeu.
+
+```r
+mape_resolver("saúde")          #> "10_saude"
+mape_resolver("meio ambiente")  #> "03_meio_ambiente"
+```
+
+### `mape_cache_dir()` e `mape_limpar_cache(tabela)`
+
+Onde as tabelas baixadas ficam, e como apagá-las.
+
+```r
+mape_cache_dir()
+mape_limpar_cache()             # apaga tudo
+mape_limpar_cache("saude")      # apaga uma
+```
+
+Defina `MAPE_CACHE` no `.Renviron` para escolher a pasta.
+
+## Combinar
+
+### `mape_juntar(..., tipo, territorio, replicar, quieto)`
+
+Junta tabelas pela chave `id_municipio` + `ano`, conferindo antes se a junção faz
+sentido.
+
+```r
+mape_juntar("seguranca", "populacao", territorio = TRUE)
+mape_juntar("economia", "educacao", tipo = "inner")
+```
+
+| argumento | o que faz |
+|---|---|
+| `...` | nomes de tabelas, ou data frames |
+| `tipo` | `"full"`, `"left"` ou `"inner"` |
+| `territorio` | acrescenta o bloco territorial no fim |
+| `replicar` | autoriza juntar tabela sem `ano`, replicando o valor |
+| `quieto` | silencia as mensagens |
+
+A função **recusa** três combinações:
+
+- tabela com **chave duplicada**, porque a junção multiplicaria linhas;
+- tabela **sem coluna `ano`** junta a um painel, sem `replicar = TRUE`;
+- e avisa, sem bloquear, quando uma tabela cobre menos da metade dos municípios.
+
+O resultado carrega o atributo `mape_relatorio` com a contagem de linhas e
+colunas depois de cada passo:
+
+```r
+d <- mape_juntar("seguranca", "populacao")
+attr(d, "mape_relatorio")
+```
+
+## Calcular
+
+### `mape_indicadores()`
+
+O catálogo de indicadores derivados, com as colunas de que cada um depende e uma
+nota de interpretação.
+
+```r
+mape_indicadores()
+```
+
+### `mape_calcular(quais, dados, anos, uf, municipios, territorio, insumos)`
+
+Calcula um ou vários indicadores. Baixa as tabelas necessárias, a não ser que
+você passe `dados`.
+
+```r
+mape_calcular("taxa_homicidios", anos = 2019, uf = "RJ", territorio = TRUE)
+mape_calcular(c("pib_per_capita", "taxa_homicidios"), insumos = TRUE)
+```
+
+Com `insumos = TRUE`, as colunas usadas na conta voltam junto — a conta fica
+conferível em vez de ter que ser aceita.
+
+Se faltar uma coluna, a função **nomeia qual** e para. Devolver `NA` em silêncio
+faria um indicador quebrado parecer dado ausente.
+
+### `mape_ranking(indicador, ano, n, maiores, uf, populacao_minima)`
+
+O ranking de municípios por um indicador.
+
+```r
+mape_ranking("taxa_homicidios", ano = 2019, populacao_minima = 100000)
+mape_ranking("pib_per_capita", ano = 2021, n = 20)
+mape_ranking("cobertura_esgoto", maiores = FALSE, uf = "PA")
+```
+
+| argumento | o que faz |
+|---|---|
+| `indicador` | nome do indicador |
+| `ano` | ano; `NULL` usa o mais recente com dado |
+| `n` | quantos municípios devolver |
+| `maiores` | `FALSE` devolve os menores |
+| `uf` | restringe a uma ou mais UFs |
+| `populacao_minima` | piso populacional |
+
+Sobre `populacao_minima`: numa taxa por 100 mil habitantes, um único caso em
+município de três mil pessoas produz 33 por 100 mil. Sem piso, o ranking vira
+uma lista de municípios minúsculos com um evento cada.
+
+## Municípios
+
+### `mape_buscar_municipio(nome, uf, exato)`
+
+Procura pelo nome, ignorando acento e caixa.
+
+```r
+mape_buscar_municipio("Rio de Janeiro")
+mape_buscar_municipio("bom jesus", uf = "PI")
+mape_buscar_municipio("são", uf = "AC")        # busca parcial
+```
+
+### `mape_resolver_municipio(x, uf)`
+
+Converte nomes ou códigos em `id_municipio` de sete dígitos. Aceita código de
+sete, código de seis e nome, misturados no mesmo vetor.
+
+```r
+mape_resolver_municipio(c("3304557", "São Paulo", "310620"))
+#> [1] "3304557" "3550308" "3106200"
+```
+
+Nome ambíguo **interrompe** com a lista de candidatos. Escolher um por conta
+própria devolveria o município errado em silêncio.
+
+### `mape_municipios(uf, regiao)`
+
+O diretório completo, embutido no pacote.
+
+```r
+mape_municipios()
+mape_municipios(uf = "AC")
+mape_municipios(regiao = "Nordeste")
+```
+
+## Dados embutidos
+
+Cinco objetos, disponíveis sem download.
+
+| objeto | o que é |
+|---|---|
+| `municipios` | o diretório: 5.570 linhas, códigos e hierarquia territorial |
+| `catalogo` | as 26 tabelas, com procedência e contagens |
+| `variaveis` | as 431 variáveis, com unidade, escala e ressalvas |
+| `dimensoes` | o vocabulário dos 17 eixos |
+| `amostra_capitais` | série das 27 capitais, para exemplos sem rede |
+
+```r
+head(amostra_capitais)
+subset(variaveis, dimensao == "10_saude")
+```

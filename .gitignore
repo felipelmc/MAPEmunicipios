@@ -1,0 +1,16 @@
+# Artefatos de build
+*.Rcheck/
+*.tar.gz
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# Saída do Quarto: o site é publicado por GitHub Actions a partir da fonte
+site/_site/
+site/.quarto/
+.quarto/
+docs/
+
+# Sistema
+.DS_Store

@@ -1,0 +1,277 @@
+---
+title: "Exemplos"
+subtitle: "Do download ao gráfico, com o código todo à mostra"
+code-copy: hover
+---
+
+Cada exemplo abaixo é completo: copiar, colar e rodar. Os gráficos foram gerados
+com o próprio código mostrado.
+
+```{ojs}
+//| echo: false
+capitais = FileAttachment("dados/capitais.json").json()
+porUF = FileAttachment("dados/por_uf.json").json()
+ranking = FileAttachment("dados/ranking_homicidios_2019.json").json()
+```
+
+## Para jornalismo {#jornalismo}
+
+### O ranking do meu estado
+
+A pergunta mais comum de uma redação: quais cidades daqui estão pior?
+
+```r
+library(MAPEmunicipios)
+
+mape_ranking("taxa_homicidios",
+             ano = 2019,
+             uf = "BA",
+             populacao_minima = 50000,
+             n = 10)
+```
+
+O `populacao_minima` não é detalhe técnico. Sem ele, o topo do ranking seria
+ocupado por municípios de três mil habitantes que tiveram um homicídio no ano —
+33 por 100 mil, número que não descreve nada. Com piso de 50 mil, a comparação
+passa a significar alguma coisa.
+
+Para o país inteiro, em municípios grandes:
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  width: 880,
+  height: 460,
+  marginLeft: 190,
+  marginRight: 56,
+  style: {fontFamily: "Inter, system-ui, sans-serif", fontSize: "12px"},
+  x: {label: "homicídios por 100 mil habitantes", grid: true, nice: true},
+  y: {label: null},
+  marks: [
+    Plot.barX(ranking, {
+      x: "taxa_homicidios",
+      y: d => `${d.nome_municipio}/${d.sigla_uf}`,
+      sort: {y: "-x"},
+      fill: "#a86a24",
+      title: d => `${d.nome_municipio}/${d.sigla_uf}\n${d.taxa_homicidios.toFixed(1)} por 100 mil\n${d.populacao_residente_i.toLocaleString("pt-BR")} habitantes`
+    }),
+    Plot.text(ranking, {
+      x: "taxa_homicidios",
+      y: d => `${d.nome_municipio}/${d.sigla_uf}`,
+      text: d => d.taxa_homicidios.toFixed(1),
+      dx: 16, fontSize: 10.5, fill: "#101010", fillOpacity: .66
+    }),
+    Plot.ruleX([0])
+  ]
+})
+```
+
+::: {.callout-caution appearance="simple"}
+## Antes de publicar
+
+O número acima vem do **SIM**, o registro de óbitos do DataSUS, e conta óbitos
+por agressão do município de **residência** da vítima. As secretarias estaduais
+publicam números por município do **fato**, e os dois raramente coincidem.
+
+Não é que um esteja certo e o outro errado — eles respondem perguntas
+diferentes. O que não dá é comparar uma série com a outra.
+:::
+
+### A cidade que quero cobrir, ao longo do tempo
+
+```r
+d <- mape_juntar("seguranca", "populacao", "economia",
+                 territorio = TRUE)
+
+manaus <- subset(d, id_municipio == mape_resolver_municipio("Manaus"))
+
+with(manaus, plot(ano, sim_obitos_homicidio_i / populacao_residente_i * 1e5,
+                  type = "l", lwd = 2,
+                  xlab = "", ylab = "homicídios por 100 mil hab."))
+```
+
+## Para pesquisa {#pesquisa}
+
+### Montar um painel para regressão
+
+```r
+library(MAPEmunicipios)
+
+painel <- mape_juntar("economia", "populacao", "educacao", "saude",
+                      territorio = TRUE)
+
+# A chave é única por construção: mape_juntar() teria parado se não fosse.
+nrow(painel)
+length(unique(paste(painel$id_municipio, painel$ano)))
+```
+
+A junção é `full` por padrão, então a linha existe se **qualquer** um dos eixos
+tiver dado. Para o painel balanceado, use `tipo = "inner"` — e conte quanto
+sobrou, porque a interseção de quatro eixos com coberturas diferentes costuma
+ser menor do que se espera.
+
+### Ler o observado, não o painel
+
+Quando a pergunta é sobre a medição e não sobre a série, leia a fonte:
+
+```r
+# 5.570 linhas: o retrato de 2015 do AdaptaBrasil, uma por município
+risco <- mape_ler("meio_ambiente/adaptabrasil")
+
+# 11.130 linhas: as duas medições censitárias do IVS, sem replicação
+ivs <- mape_ler("sociedade/atlas_ivs")
+
+# 55.694 linhas: só os anos de divulgação do IDEB, sem o ano par copiado
+ideb <- mape_ler("educacao/ideb")
+```
+
+Isso importa para qualquer coisa que conte observações. Numa regressão com erro
+padrão agrupado, usar a dimensão em vez da fonte multiplica artificialmente o
+número de observações do AdaptaBrasil por onze — e os erros padrão saem
+pequenos demais.
+
+### Conferir uma conta em vez de confiar nela
+
+```r
+d <- mape_calcular("pib_per_capita", anos = 2021, insumos = TRUE)
+head(d)
+```
+
+Com `insumos = TRUE`, as colunas do numerador e do denominador voltam junto. A
+base antiga tinha uma coluna de PIB per capita que **não era reproduzível**: o
+denominador vinha de uma segunda extração da população, descartada logo depois
+de dividir. Aqui a conta fica à vista.
+
+## Para sociedade civil {#civil}
+
+### Meu município recebe quanto de emenda?
+
+```r
+fin <- mape_ler("financas", territorio = TRUE)
+
+meu <- subset(fin, id_municipio == mape_resolver_municipio("Petrolina", uf = "PE"))
+meu[, c("ano", "emendas_valor_total_brl2023", "emendas_valor_saude_brl2023")]
+```
+
+::: {.callout-warning appearance="simple"}
+A tabela de finanças tem 222 chaves duplicadas, porque a fonte das emendas
+associa o gasto ao município **por nome, sem UF**. Se o seu município tem
+homônimo em outro estado, confira o valor antes de usar. `mape_sobre()` registra
+isso.
+:::
+
+### O saneamento melhorou?
+
+```r
+esgoto <- mape_calcular("cobertura_esgoto", uf = "PE", territorio = TRUE)
+esgoto <- subset(esgoto, !is.na(cobertura_esgoto))
+
+boxplot(cobertura_esgoto ~ ano, data = esgoto,
+        xlab = "", ylab = "% da população urbana com esgoto")
+```
+
+O SNIS é **declaratório**: município que não responde ao levantamento aparece
+como vazio, não como zero. Uma queda na cobertura entre dois anos pode ser queda
+real ou pode ser um município que deixou de responder — e a diferença entre as
+duas coisas é grande.
+
+### Comparar o meu estado com os vizinhos
+
+A mediana municipal por estado, que é o que o gráfico abaixo mostra, é mais
+honesta que a média: com municípios de 800 a 12 milhões de habitantes, a média
+descreve a capital.
+
+```r
+d <- mape_calcular(c("taxa_homicidios", "pib_per_capita"), anos = 2019,
+                   territorio = TRUE)
+
+aggregate(taxa_homicidios ~ sigla_uf, d, median, na.rm = TRUE)
+```
+
+```{ojs}
+//| echo: false
+viewof indComp = Inputs.select(
+  new Map([
+    ["Taxa de homicídios", "homicidios_mediana"],
+    ["PIB per capita", "pib_pc_mediana"],
+    ["Cobertura da ESF", "cobertura_esf_mediana"]
+  ]),
+  {label: "Indicador", value: "homicidios_mediana"}
+)
+```
+
+```{ojs}
+//| echo: false
+compUF = porUF.filter(d => d[indComp] != null)
+
+Plot.plot({
+  width: 880,
+  height: 460,
+  marginLeft: 46,
+  marginBottom: 40,
+  style: {fontFamily: "Inter, system-ui, sans-serif", fontSize: "12px"},
+  x: {label: "ano", tickFormat: "d", type: "point"},
+  y: {label: null, grid: true, nice: true},
+  color: {
+    legend: true,
+    domain: ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"],
+    range: ["#5d8a4e", "#a86a24", "#b2ac46", "#c0504d", "#3f7ea8"],
+    label: "região"
+  },
+  marks: [
+    Plot.line(compUF, {
+      x: "ano", y: indComp, z: "uf", stroke: "regiao",
+      strokeWidth: 1.5, strokeOpacity: .7
+    }),
+    Plot.dot(compUF, {x: "ano", y: indComp, z: "uf", fill: "regiao", r: 3}),
+    Plot.tip(compUF, Plot.pointer({
+      x: "ano", y: indComp, z: "uf",
+      title: d => `${d.uf} · ${d.ano}\n${d[indComp].toLocaleString("pt-BR")}\n${d.municipios} municípios`
+    }))
+  ]
+})
+```
+
+## Combinando com mapas
+
+O pacote não traz geometria, para não pesar. Para mapear, use o `geobr`:
+
+```r
+# install.packages("geobr")
+library(geobr)
+library(ggplot2)
+
+malha <- read_municipality(year = 2020, showProgress = FALSE)
+malha$id_municipio <- as.character(malha$code_muni)
+
+d <- mape_calcular("taxa_homicidios", anos = 2019)
+mapa <- merge(malha, d, by = "id_municipio", all.x = TRUE)
+
+ggplot(mapa) +
+  geom_sf(aes(fill = taxa_homicidios), color = NA) +
+  scale_fill_viridis_c(option = "inferno", direction = -1, na.value = "grey92") +
+  theme_void()
+```
+
+::: {.callout-important appearance="simple"}
+O `geobr` devolve `code_muni` como **número**. Converter para texto com
+`as.character()` antes de juntar não é opcional: sem isso, a junção deixa de
+casar em todo município cujo código começa com zero.
+:::
+
+## Onde continuar
+
+::: {.cartoes}
+::: {.cartao}
+### [Os dados →](dados.qmd)
+O esquema completo, o catálogo e a busca por variável.
+:::
+::: {.cartao}
+### [Referência →](referencia.qmd)
+Todas as funções, com argumentos e valor de retorno.
+:::
+::: {.cartao}
+### [O ETL →](https://github.com/mape-iesp/MAPEmunicipios-ETL)
+Como cada número foi produzido, e como atualizá-lo.
+:::
+:::

@@ -1,0 +1,295 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 1000" width="1240" height="1000" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#84954b"/>
+    </marker>
+    <marker id="setaClara" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b8b8b0"/>
+    </marker>
+    <linearGradient id="gradTopo" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#84954b"/>
+      <stop offset="55%" stop-color="#b2ac46"/>
+      <stop offset="100%" stop-color="#a86a24"/>
+    </linearGradient>
+    <style>
+      .t     { fill:#101010 }
+      .mut   { fill:#101010; opacity:.62 }
+      .inv   { fill:#ffffff }
+      .h1    { font-size:31px; font-weight:700; letter-spacing:-.4px }
+      .h2    { font-size:19px; font-weight:700; letter-spacing:-.2px }
+      .h3    { font-size:14.5px; font-weight:650 }
+      .lbl   { font-size:11px; font-weight:700; letter-spacing:1.5px }
+      .p     { font-size:13px }
+      .sm    { font-size:11.5px }
+      .xs    { font-size:10.5px }
+      .mono  { font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace }
+      .card  { fill:#ffffff; stroke:#e2e2dc; stroke-width:1.4 }
+      .num   { font-size:22px; font-weight:700 }
+    </style>
+  </defs>
+
+  <rect width="1240" height="1000" fill="#fbfbf8"/>
+
+  <!-- ================= CABEÇALHO ================= -->
+  <rect x="0" y="0" width="1240" height="6" fill="url(#gradTopo)"/>
+  <text class="t h1" x="60" y="66">MAPEmunicipios</text>
+  <text class="mut p" x="60" y="92">Como os dados estão separados em eixos e tabelas</text>
+
+  <g transform="translate(792,44)">
+    <rect class="card" x="0" y="0" width="126" height="52" rx="8"/>
+    <text class="t num" x="63" y="27" text-anchor="middle">5.570</text>
+    <text class="mut xs" x="63" y="42" text-anchor="middle">municípios</text>
+  </g>
+  <g transform="translate(930,44)">
+    <rect class="card" x="0" y="0" width="126" height="52" rx="8"/>
+    <text class="t num" x="63" y="27" text-anchor="middle">1989–2024</text>
+    <text class="mut xs" x="63" y="42" text-anchor="middle">anos</text>
+  </g>
+  <g transform="translate(1068,44)">
+    <rect class="card" x="0" y="0" width="112" height="52" rx="8"/>
+    <text class="t num" x="56" y="27" text-anchor="middle">431</text>
+    <text class="mut xs" x="56" y="42" text-anchor="middle">variáveis</text>
+  </g>
+
+  <!-- ================= AS TRÊS CAMADAS ================= -->
+  <text class="mut lbl" x="60" y="146">AS TRÊS CAMADAS</text>
+  <line x1="60" y1="156" x2="1180" y2="156" stroke="#e2e2dc" stroke-width="1.4"/>
+
+  <!-- FONTE -->
+  <g transform="translate(60,178)">
+    <rect x="0" y="0" width="330" height="196" rx="12" fill="#ffffff" stroke="#84954b" stroke-width="2"/>
+    <rect x="0" y="0" width="330" height="34" rx="12" fill="#84954b"/>
+    <rect x="0" y="22" width="330" height="12" fill="#84954b"/>
+    <text class="inv h3" x="16" y="23">FONTE · 10 tabelas</text>
+    <text class="t p" x="16" y="60" font-weight="650">O dado como foi observado</text>
+    <text class="mut sm" x="16" y="84">Na granularidade nativa da fonte. Uma linha</text>
+    <text class="mut sm" x="16" y="101">por medição, e não uma por município-ano.</text>
+
+    <rect x="16" y="118" width="298" height="62" rx="7" fill="#f5f6ee" stroke="#e2e2dc"/>
+    <text class="mut xs mono" x="28" y="137">03_meio_ambiente/adaptabrasil</text>
+    <text class="t sm" x="28" y="157"><tspan font-weight="700">5.570 linhas</tspan> — o AdaptaBrasil publica</text>
+    <text class="t sm" x="28" y="172">um retrato único, de 2015.</text>
+  </g>
+
+  <!-- DIMENSÃO -->
+  <g transform="translate(455,178)">
+    <rect x="0" y="0" width="330" height="196" rx="12" fill="#ffffff" stroke="#b2ac46" stroke-width="2"/>
+    <rect x="0" y="0" width="330" height="34" rx="12" fill="#b2ac46"/>
+    <rect x="0" y="22" width="330" height="12" fill="#b2ac46"/>
+    <text class="inv h3" x="16" y="23">DIMENSÃO · 16 tabelas</text>
+    <text class="t p" x="16" y="60" font-weight="650">O painel município × ano</text>
+    <text class="mut sm" x="16" y="84">Junta as fontes de um eixo e declara como</text>
+    <text class="mut sm" x="16" y="101">o dado se propaga no tempo.</text>
+
+    <rect x="16" y="118" width="298" height="62" rx="7" fill="#f8f7ee" stroke="#e2e2dc"/>
+    <text class="mut xs mono" x="28" y="137">03_meio_ambiente</text>
+    <text class="t sm" x="28" y="157"><tspan font-weight="700">183.810 linhas</tspan> — o retrato de 2015</text>
+    <text class="t sm" x="28" y="172">repetido de 2010 a 2020.</text>
+  </g>
+
+  <!-- DERIVADO -->
+  <g transform="translate(850,178)">
+    <rect x="0" y="0" width="330" height="196" rx="12" fill="#ffffff" stroke="#a86a24" stroke-width="2"/>
+    <rect x="0" y="0" width="330" height="34" rx="12" fill="#a86a24"/>
+    <rect x="0" y="22" width="330" height="12" fill="#a86a24"/>
+    <text class="inv h3" x="16" y="23">DERIVADO · 1 tabela</text>
+    <text class="t p" x="16" y="60" font-weight="650">A base larga</text>
+    <text class="mut sm" x="16" y="84">As 16 dimensões lado a lado. Gerada por</text>
+    <text class="mut sm" x="16" y="101">função, não versionada.</text>
+
+    <rect x="16" y="118" width="298" height="62" rx="7" fill="#faf4ec" stroke="#e2e2dc"/>
+    <text class="mut xs mono" x="28" y="137">base_larga</text>
+    <text class="t sm" x="28" y="157"><tspan font-weight="700">440 colunas</tspan>, e metade das células</text>
+    <text class="t sm" x="28" y="172">vazias. Daí publicar por eixo.</text>
+  </g>
+
+  <!-- setas -->
+  <line x1="392" y1="276" x2="450" y2="276" stroke="#84954b" stroke-width="2.4" marker-end="url(#seta)"/>
+  <line x1="787" y1="276" x2="845" y2="276" stroke="#84954b" stroke-width="2.4" marker-end="url(#seta)"/>
+
+  <!-- nota -->
+  <g transform="translate(60,392)">
+    <rect x="0" y="0" width="1120" height="46" rx="8" fill="#f5f6ee" stroke="#dcded0"/>
+    <text class="t sm" x="18" y="20"><tspan font-weight="700">Qual camada usar.</tspan>  Ler a <tspan font-weight="700">fonte</tspan> responde “quantos municípios foram de fato medidos?”. Ler a <tspan font-weight="700">dimensão</tspan> responde</text>
+    <text class="t sm" x="18" y="36">“como isso muda ao longo do tempo, ao lado de outra coisa?”. A base antiga só tinha a segunda — e por isso não dava para responder a primeira.</text>
+  </g>
+
+  <!-- ================= OS 17 EIXOS ================= -->
+  <text class="mut lbl" x="60" y="486">OS 17 EIXOS TEMÁTICOS</text>
+  <line x1="60" y1="496" x2="1180" y2="496" stroke="#e2e2dc" stroke-width="1.4"/>
+  <text class="mut sm" x="60" y="518">O número em cada bloco é a quantidade de variáveis. Os eixos com fonte própria trazem o selo <tspan font-weight="700" fill="#84954b">▸ fontes</tspan>.</text>
+
+  <!-- linha 1 -->
+  <g transform="translate(60,536)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#7a7f6e"/>
+    <text class="mut xs mono" x="16" y="22">00_diretorios</text>
+    <text class="t h3" x="16" y="44">Diretórios</text>
+    <text class="mut xs" x="16" y="62">a espinha dorsal: códigos e</text>
+    <text class="mut xs" x="16" y="76">hierarquia territorial</text>
+    <text class="t num" x="196" y="30" text-anchor="end">27</text>
+  </g>
+  <g transform="translate(288,536)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#a86a24"/>
+    <text class="mut xs mono" x="16" y="22" font-size="9.5">01_assistencia_social_dh</text>
+    <text class="t h3" x="16" y="44">Assistência e DH</text>
+    <text class="mut xs" x="16" y="62">CadÚnico e Disque 100</text>
+    <text class="xs" x="16" y="76" fill="#84954b" font-weight="700">▸ 2 fontes</text>
+    <text class="t num" x="196" y="30" text-anchor="end">14</text>
+  </g>
+  <g transform="translate(516,536)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#b2ac46"/>
+    <text class="mut xs mono" x="16" y="22">02_populacao</text>
+    <text class="t h3" x="16" y="44">População</text>
+    <text class="mut xs" x="16" y="62">residentes e composição</text>
+    <text class="mut xs" x="16" y="76">religiosa · 1991–2023</text>
+    <text class="t num" x="196" y="30" text-anchor="end">8</text>
+  </g>
+  <g transform="translate(744,536)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#5d8a4e"/>
+    <text class="mut xs mono" x="16" y="22">03_meio_ambiente</text>
+    <text class="t h3" x="16" y="44">Meio ambiente</text>
+    <text class="mut xs" x="16" y="62">desastres, saneamento,</text>
+    <text class="xs" x="16" y="76" fill="#84954b" font-weight="700">▸ 1 fonte</text>
+    <text class="t num" x="196" y="30" text-anchor="end">75</text>
+  </g>
+  <g transform="translate(972,536)">
+    <rect class="card" x="0" y="0" width="208" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#a86a24"/>
+    <text class="mut xs mono" x="16" y="22">04_economia</text>
+    <text class="t h3" x="16" y="44">Economia</text>
+    <text class="mut xs" x="16" y="62">PIB e valor adicionado</text>
+    <text class="mut xs" x="16" y="76">1999–2021</text>
+    <text class="t num" x="192" y="30" text-anchor="end">17</text>
+  </g>
+
+  <!-- linha 2 -->
+  <g transform="translate(60,634)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#8c6fa8"/>
+    <text class="mut xs mono" x="16" y="22">05_sociedade</text>
+    <text class="t h3" x="16" y="44">Sociedade</text>
+    <text class="mut xs" x="16" y="62">IVS e IDHM · censos</text>
+    <text class="xs" x="16" y="76" fill="#84954b" font-weight="700">▸ 1 fonte</text>
+    <text class="t num" x="196" y="30" text-anchor="end">8</text>
+  </g>
+  <g transform="translate(288,634)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#a86a24"/>
+    <text class="mut xs mono" x="16" y="22">06_financas</text>
+    <text class="t h3" x="16" y="44">Finanças</text>
+    <text class="mut xs" x="16" y="62">receitas e emendas</text>
+    <text class="mut xs" x="16" y="76">1989–2024</text>
+    <text class="t num" x="196" y="30" text-anchor="end">37</text>
+  </g>
+  <g transform="translate(516,634)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#7a7f6e"/>
+    <text class="mut xs mono" x="16" y="22">07_recursos_humanos</text>
+    <text class="t h3" x="16" y="44">Recursos humanos</text>
+    <text class="mut xs" x="16" y="62">servidores da adminis-</text>
+    <text class="mut xs" x="16" y="76">tração · 2009–2023</text>
+    <text class="t num" x="196" y="30" text-anchor="end">15</text>
+  </g>
+  <g transform="translate(744,634)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#3f7ea8"/>
+    <text class="mut xs mono" x="16" y="22">08_energia_internet</text>
+    <text class="t h3" x="16" y="44">Energia e internet</text>
+    <text class="mut xs" x="16" y="62">banda larga, telefonia,</text>
+    <text class="mut xs" x="16" y="76">eletricidade · 2004–2024</text>
+    <text class="t num" x="196" y="30" text-anchor="end">10</text>
+  </g>
+  <g transform="translate(972,634)">
+    <rect class="card" x="0" y="0" width="208" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#b2ac46"/>
+    <text class="mut xs mono" x="16" y="22">09_educacao</text>
+    <text class="t h3" x="16" y="44">Educação</text>
+    <text class="mut xs" x="16" y="62">IDEB, SAEB, ensino sup.</text>
+    <text class="xs" x="16" y="76" fill="#84954b" font-weight="700">▸ 2 fontes</text>
+    <text class="t num" x="192" y="30" text-anchor="end">35</text>
+  </g>
+
+  <!-- linha 3 -->
+  <g transform="translate(60,732)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#c0504d"/>
+    <text class="mut xs mono" x="16" y="22">10_saude</text>
+    <text class="t h3" x="16" y="44">Saúde</text>
+    <text class="mut xs" x="16" y="62">vacinação, atenção bási-</text>
+    <text class="mut xs" x="16" y="76">ca, IEPS · 1994–2021</text>
+    <text class="t num" x="196" y="30" text-anchor="end">63</text>
+  </g>
+  <g transform="translate(288,732)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#3f7ea8"/>
+    <text class="mut xs mono" x="16" y="22">11_transportes</text>
+    <text class="t h3" x="16" y="44">Transportes</text>
+    <text class="mut xs" x="16" y="62">tarifas e tarifa zero</text>
+    <text class="xs" x="16" y="76" fill="#84954b" font-weight="700">▸ 2 fontes</text>
+    <text class="t num" x="196" y="30" text-anchor="end">5</text>
+  </g>
+  <g transform="translate(516,732)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#a86a24"/>
+    <text class="mut xs mono" x="16" y="22">12_habitacao</text>
+    <text class="t h3" x="16" y="44">Habitação</text>
+    <text class="mut xs" x="16" y="62">Minha Casa Minha Vida</text>
+    <text class="xs" x="16" y="76" fill="#84954b" font-weight="700">▸ 1 fonte</text>
+    <text class="t num" x="196" y="30" text-anchor="end">6</text>
+  </g>
+  <g transform="translate(744,732)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#c0504d"/>
+    <text class="mut xs mono" x="16" y="22">13_seguranca</text>
+    <text class="t h3" x="16" y="44">Segurança</text>
+    <text class="mut xs" x="16" y="62">mortalidade violenta e</text>
+    <text class="mut xs" x="16" y="76">ocorrências · 1996–2021</text>
+    <text class="t num" x="196" y="30" text-anchor="end">63</text>
+  </g>
+  <g transform="translate(972,732)">
+    <rect class="card" x="0" y="0" width="208" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#7a7f6e"/>
+    <text class="mut xs mono" x="16" y="22">14_corrupcao</text>
+    <text class="t h3" x="16" y="44">Corrupção</text>
+    <text class="mut xs" x="16" y="62">fiscalização da CGU</text>
+    <text class="mut xs" x="16" y="76">2006–2018</text>
+    <text class="t num" x="192" y="30" text-anchor="end">6</text>
+  </g>
+
+  <!-- linha 4 -->
+  <g transform="translate(60,830)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#8c6fa8"/>
+    <text class="mut xs mono" x="16" y="22">15_dados_historicos</text>
+    <text class="t h3" x="16" y="44">Dados históricos</text>
+    <text class="mut xs" x="16" y="62">1872–1920 · transversal,</text>
+    <text class="mut xs" x="16" y="76">sem dimensão temporal</text>
+    <text class="t num" x="196" y="30" text-anchor="end">8</text>
+  </g>
+  <g transform="translate(288,830)">
+    <rect class="card" x="0" y="0" width="212" height="86" rx="10"/>
+    <rect x="0" y="0" width="4" height="86" rx="2" fill="#b2ac46"/>
+    <text class="mut xs mono" x="16" y="22">16_eleicoes</text>
+    <text class="t h3" x="16" y="44">Eleições</text>
+    <text class="mut xs" x="16" y="62">resultados municipais e</text>
+    <text class="mut xs" x="16" y="76">alinhamento · 2000–2023</text>
+    <text class="t num" x="196" y="30" text-anchor="end">34</text>
+  </g>
+
+  <!-- chave -->
+  <g transform="translate(516,830)">
+    <rect x="0" y="0" width="664" height="86" rx="10" fill="#22261a"/>
+    <text class="inv lbl" x="20" y="26" opacity=".62">A CHAVE, EM TODA TABELA</text>
+    <text class="inv sm mono" x="20" y="52" font-size="13.5">id_municipio  ·  character de 7 dígitos</text>
+    <text class="inv sm mono" x="20" y="72" font-size="13.5">ano           ·  integer</text>
+    <text class="inv xs" x="330" y="52" opacity=".72">O código do IBGE é texto de propósito: lido como</text>
+    <text class="inv xs" x="330" y="68" opacity=".72">número, perde o zero à esquerda de todo município</text>
+    <text class="inv xs" x="330" y="84" opacity=".72">do Acre, de Alagoas e do Amazonas.</text>
+  </g>
+
+  <text class="mut xs" x="60" y="954">mape-iesp.github.io/MAPEmunicipios  ·  dados sob CC BY 4.0, condicionada pelas licenças das fontes</text>
+</svg>

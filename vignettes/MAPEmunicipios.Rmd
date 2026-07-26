@@ -1,0 +1,220 @@
+---
+title: "Começando com o MAPEmunicipios"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Começando com o MAPEmunicipios}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(MAPEmunicipios)
+```
+
+O MAPEmunicipios reúne dados dos 5.570 municípios brasileiros, de 1989 a 2024,
+em 17 eixos temáticos. Esta vinheta percorre o caminho completo: descobrir o que
+existe, achar a variável certa, baixar, combinar e calcular.
+
+Nada aqui exige credencial. Os exemplos que baixam dados estão marcados como não
+executáveis, para que a vinheta compile sem rede; os demais rodam com os dados
+embutidos no pacote.
+
+## O que existe
+
+A primeira pergunta é sempre "o dado que eu preciso está aqui?". Duas funções
+respondem, e as duas trabalham sem tocar a rede.
+
+```{r}
+mape_eixos()
+```
+
+Cada eixo tem uma ou mais tabelas:
+
+```{r}
+mape_tabelas(eixo = "09_educacao")
+```
+
+## Fonte e dimensão
+
+Repare que a Educação tem três tabelas: uma de dimensão e duas de fonte. Esta é
+a distinção central do MAPEmunicipios, e vale entender antes de baixar qualquer
+coisa.
+
+A **dimensão** é o painel município × ano. `09_educacao` tem 111.388 linhas,
+porque cobre 5.570 municípios em vinte anos.
+
+A **fonte** guarda o dado como foi observado. O IDEB é divulgado a cada dois
+anos, nos anos ímpares, e `09_educacao/ideb` tem 55.694 linhas — exatamente
+metade. As linhas dos anos pares, na dimensão, são cópia da divulgação anterior.
+
+```{r}
+mape_tabelas(camada = "fonte")
+```
+
+Qual usar depende da pergunta. Para "como o IDEB evolui ao lado do gasto em
+educação", a dimensão. Para "quantos municípios foram avaliados", a fonte — e a
+diferença entre as duas respostas é o dobro.
+
+## Achar a variável
+
+São 431 variáveis. A busca varre nome e descrição, ignora acento e exige todas
+as palavras:
+
+```{r}
+mape_variaveis("cobertura vacinal", eixo = "10_saude")
+```
+
+Antes de usar uma delas, vale ler o que se sabe:
+
+```{r}
+mape_sobre("pni_cobertura_bcg_pct")
+```
+
+A ressalva não é detalhe. Essa coluna chega a 13.050% porque o SI-PNI calcula
+cobertura sobre uma população-alvo estimada e não trunca o resultado. Publicar o
+máximo dessa série como "cobertura vacinal" seria um erro — e é justamente isso
+que `mape_sobre()` existe para evitar.
+
+## Como ler um nome de variável
+
+Todo nome segue `[prefixo_da_fonte_]conceito[_qualificador]_sufixo`. O sufixo
+diz a escala:
+
+| sufixo | escala |
+|---|---|
+| `_i` | contagem |
+| `_pct` | percentual de 0 a 100 |
+| `_prop` | proporção de 0 a 1 |
+| `_razao` | quociente que pode passar de 1 |
+| `_p100k`, `_p1k`, `_p100dom` | taxa, com o denominador no nome |
+| `_brl_nominal`, `_brl2023` | dinheiro, com a base no nome |
+| `_idx` | índice ou escore |
+| `_cat` | categoria |
+
+O prefixo de fonte aparece quando mais de uma fonte mede o mesmo conceito.
+Cobertura vacinal é medida pelo SI-PNI e pelo IEPS, com denominadores
+diferentes — daí `pni_cobertura_bcg_pct` e `ieps_cobertura_vacinal_bcg_pct`.
+
+## Municípios
+
+Toda tabela usa `id_municipio`, o código de sete dígitos do IBGE. Para ir do
+nome ao código:
+
+```{r}
+mape_buscar_municipio("Rio de Janeiro")
+```
+
+Acento é opcional. Nomes repetidos são comuns, e nesse caso a função **para** em
+vez de escolher:
+
+```{r, error = TRUE}
+mape_resolver_municipio("Bom Jesus")
+```
+
+```{r}
+mape_resolver_municipio("Bom Jesus", uf = "PI")
+```
+
+## Baixar
+
+```{r, eval = FALSE}
+saude <- mape_ler("saude")
+
+# Com filtros e o bloco territorial
+rj <- mape_ler("economia", uf = "RJ", anos = 2015:2021, territorio = TRUE)
+```
+
+A primeira leitura de cada tabela baixa o arquivo e guarda em cache; as
+seguintes não tocam a rede. `mape_cache_dir()` diz onde, e `mape_limpar_cache()`
+apaga.
+
+`territorio = TRUE` acrescenta nome do município, UF e região. Nenhuma tabela
+carrega essas colunas: o bloco territorial pertence ao diretório de municípios e
+só ele o publica, para que não existam duas versões divergentes do mesmo campo.
+
+## Combinar
+
+```{r, eval = FALSE}
+d <- mape_juntar("seguranca", "populacao", territorio = TRUE)
+attr(d, "mape_relatorio")
+```
+
+`mape_juntar()` confere a cardinalidade **antes** de juntar e recusa
+combinações que produziriam resultado enganoso:
+
+```{r, eval = FALSE}
+# Erro: 06_financas tem 222 chaves duplicadas
+mape_juntar("financas", "populacao")
+
+# Erro: 15_dados_historicos não tem coluna `ano`
+mape_juntar("populacao", "dados_historicos")
+
+# Com autorização explícita, funciona — e avisa que o valor será replicado
+mape_juntar("populacao", "dados_historicos", replicar = TRUE)
+```
+
+A recusa é deliberada. O pipeline antigo juntava, a chave duplicada multiplicava
+as linhas, e um `distinct()` no fim apagava a evidência.
+
+## Calcular indicadores
+
+Alguns números que interessam não estão numa coluna: são uma conta entre
+colunas.
+
+```{r}
+mape_indicadores()[, c("indicador", "rotulo", "unidade")]
+```
+
+```{r, eval = FALSE}
+mape_calcular("taxa_homicidios", anos = 2019, uf = "RJ", territorio = TRUE)
+```
+
+Com `insumos = TRUE`, o numerador e o denominador voltam junto, e a conta fica
+conferível:
+
+```{r, eval = FALSE}
+mape_calcular("pib_per_capita", anos = 2021, insumos = TRUE)
+```
+
+Isso importa porque a base antiga tinha uma coluna de PIB per capita que **não
+era reproduzível**: o denominador vinha de uma segunda extração da população,
+descartada logo depois de dividir.
+
+## Rankings
+
+```{r, eval = FALSE}
+mape_ranking("taxa_homicidios", ano = 2019, populacao_minima = 100000)
+```
+
+O `populacao_minima` existe por um motivo estatístico. Numa taxa por 100 mil
+habitantes, um único caso em município de três mil pessoas produz 33 por 100
+mil. Sem piso populacional, todo ranking de taxa vira uma lista de municípios
+minúsculos com um evento cada — e a manchete que sai dali está errada.
+
+## Trabalhar sem rede
+
+O pacote embute cinco objetos, disponíveis assim que você carrega a biblioteca:
+
+```{r}
+dim(municipios)
+dim(catalogo)
+dim(variaveis)
+head(amostra_capitais[, c("nome_municipio", "ano", "populacao_residente_i")])
+```
+
+`amostra_capitais` traz a série das 27 capitais com quatro indicadores, e serve
+para experimentar antes de baixar qualquer coisa.
+
+## Para continuar
+
+O site do pacote — <https://mape-iesp.github.io/MAPEmunicipios/> — traz o
+esquema completo dos dados em diagrama, o catálogo pesquisável das 26 tabelas e
+das 431 variáveis, e exemplos completos para pesquisa, jornalismo e sociedade
+civil.
+
+O código que produz os dados é público:
+<https://github.com/mape-iesp/MAPEmunicipios-ETL>.

@@ -1,0 +1,189 @@
+/* Componentes próprios do site, escritos à mão porque não têm equivalente
+   no tema base. Tudo aqui é usado por alguma página. */
+
+/* ---------- Abertura ---------- */
+
+.hero {
+  padding: 3.2rem 0 2.4rem;
+  border-bottom: 1px solid var(--mape-linha);
+  margin-bottom: 2.2rem;
+}
+.hero .olho {
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mape-verde);
+  margin-bottom: 0.7rem;
+}
+.hero h1 {
+  font-size: clamp(2.1rem, 5vw, 3.1rem);
+  line-height: 1.1;
+  margin: 0 0 1rem;
+  letter-spacing: -0.03em;
+}
+.hero .linha-fina {
+  font-size: clamp(1rem, 2vw, 1.18rem);
+  color: var(--mape-mudo);
+  max-width: 46em;
+  margin-bottom: 1.6rem;
+}
+
+/* ---------- Números ---------- */
+
+.numeros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.9rem;
+  margin: 1.8rem 0;
+}
+.numero {
+  background: #fff;
+  border: 1px solid var(--mape-linha);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+}
+.numero .v {
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.numero .r {
+  font-size: 0.8rem;
+  color: var(--mape-mudo);
+  margin-top: 0.2rem;
+}
+
+/* ---------- Cartões ---------- */
+
+.cartoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 1.6rem 0;
+}
+.cartao {
+  background: #fff;
+  border: 1px solid var(--mape-linha);
+  border-radius: 10px;
+  padding: 1.2rem 1.3rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.cartao:hover { border-color: var(--mape-oliva); transform: translateY(-2px); }
+.cartao h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.02rem;
+  border: 0;
+  padding: 0;
+}
+.cartao p { font-size: 0.9rem; color: var(--mape-mudo); margin: 0 0 0.7rem; }
+.cartao .quem {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.16rem 0.5rem;
+  border-radius: 20px;
+  margin-bottom: 0.55rem;
+}
+.quem.pesquisa  { background: #eef1e2; color: #55632e; }
+.quem.jornal    { background: #f6ece0; color: #8a5518; }
+.quem.civil     { background: #e6eef4; color: #2f5f80; }
+
+/* ---------- Explorador ---------- */
+
+.painel {
+  background: var(--mape-suave);
+  border: 1px solid var(--mape-linha);
+  border-radius: 10px;
+  padding: 1.1rem 1.2rem;
+  margin: 1.4rem 0;
+}
+.painel .controles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  align-items: flex-end;
+  margin-bottom: 0.9rem;
+}
+
+.tabela-rolagem {
+  overflow-x: auto;
+  border: 1px solid var(--mape-linha);
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+.tabela-rolagem table { margin: 0; font-size: 0.86rem; }
+
+.selo {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.12rem 0.45rem;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+}
+.selo.dimensao { background: #f4f3e3; color: #6c6820; }
+.selo.fonte    { background: #e8efe0; color: #4a5c2c; }
+
+/* ---------- Diagrama ---------- */
+
+.diagrama {
+  margin: 1.8rem 0;
+  border: 1px solid var(--mape-linha);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fbfbf8;
+}
+.diagrama img { width: 100%; display: block; }
+.diagrama figcaption {
+  font-size: 0.82rem;
+  color: var(--mape-mudo);
+  padding: 0.7rem 1rem;
+  border-top: 1px solid var(--mape-linha);
+  background: #fff;
+}
+
+/* ---------- Passos ---------- */
+
+.passos { counter-reset: passo; list-style: none; padding: 0; margin: 1.4rem 0; }
+.passos > li {
+  counter-increment: passo;
+  position: relative;
+  padding-left: 2.6rem;
+  margin-bottom: 1.5rem;
+}
+.passos > li::before {
+  content: counter(passo);
+  position: absolute;
+  left: 0; top: 0;
+  width: 1.8rem; height: 1.8rem;
+  background: var(--mape-verde);
+  color: #fff;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.passos > li > strong { display: block; margin-bottom: 0.3rem; }
+
+/* ---------- Observable ---------- */
+
+.observablehq { margin: 1rem 0; }
+form.oi-inputs { display: flex; flex-wrap: wrap; gap: 1.2rem; }
+
+/* ---------- Responsivo ---------- */
+
+@media (max-width: 640px) {
+  .hero { padding: 2rem 0 1.6rem; }
+  .numeros { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---------- Tema escuro ---------- */
+
+@media (prefers-color-scheme: dark) {
+  .diagrama { background: #fff; }
+}
