@@ -6,3 +6,6 @@
 ^docs$
 ^\.quarto$
 ^_site$
+^MAPEmunicipios\.Rproj$
+^\.Rproj\.user$
+^CLAUDE\.md$
