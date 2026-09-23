@@ -17,6 +17,16 @@ website:
   favicon: img/favicon.svg
   page-navigation: true
 
+  # Faixa de prévia enquanto o pacote não pode ser instalado: o main ainda é a
+  # v0.0.1, que baixa um arquivo removido do OSF, e a v0.1.0 lê do release do
+  # ETL, que não foi publicado. Retirar quando os dois estiverem no ar.
+  announcement:
+    icon: info-circle
+    dismissable: false
+    type: warning
+    position: below-navbar
+    content: "**Versão prévia.** O pacote ainda não está disponível para instalação, e os números refletem as tabelas de julho de 2026."
+
   navbar:
     background: light
     logo: img/marca.svg
