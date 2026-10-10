@@ -10,7 +10,7 @@
 #
 # Rodar com:  Rscript data-raw/preparar_dados.R
 #
-# Fonte: /Users/felipelmc/Desktop/MAPEmunicipios-ETL (repositório do ETL).
+# Fonte: /Users/felipelmc/Projects/MAPEmunicipios-ETL (repositório do ETL).
 
 ETL <- Sys.getenv("MAPE_ETL_RAIZ", "~/Desktop/MAPEmunicipios-ETL")
 ETL <- path.expand(ETL)
